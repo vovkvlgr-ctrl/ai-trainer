@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="ШІ-тренажер Академії Viatec: практичні задачі з роботи з ШІ-помічником.">
+<style>html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>ШІ-тренажер Академії</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@600;700;800&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: одна колонка до 920px — список практичних задач, далі задача як робочий аркуш з п’ятьма кроками зверху вниз */
+:root {
+  --bg: #F2F3EE;
+  --surface: #FCFCF9;
+  --ink: #18211F;
+  --muted: #56625C;
+  --line: #D9DDD3;
+  --accent: #D9502B;
+  --accent-ink: #FFF8F4;
+  --accent-soft: #FBE4DB;
+  --ok: #1D7F52;
+  --ok-bg: #DFF1E6;
+  --warn: #8A5A0B;
+  --warn-bg: #FAEED3;
+  --bad: #B3321F;
+  --bad-bg: #FADFD9;
+  --code-bg: #1E2826;
+  --code-ink: #F2F3EE;
+  --f-display: 'Unbounded', 'Trebuchet MS', sans-serif;
+  --f-body: 'Golos Text', 'Segoe UI', Arial, sans-serif;
+  --radius: 18px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111614; --surface: #1A201E; --ink: #ECEFEA; --muted: #A2ACA6; --line: #2E3734;
+    --accent: #FF7A52; --accent-ink: #1A0D08; --accent-soft: #3A2219;
+    --ok: #5CCB95; --ok-bg: #173226; --warn: #E9B551; --warn-bg: #362A12; --bad: #FF8A78; --bad-bg: #3A1D19;
+    --code-bg: #0B0F0E; --code-ink: #E6EAE4;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111614; --surface: #1A201E; --ink: #ECEFEA; --muted: #A2ACA6; --line: #2E3734;
+  --accent: #FF7A52; --accent-ink: #1A0D08; --accent-soft: #3A2219;
+  --ok: #5CCB95; --ok-bg: #173226; --warn: #E9B551; --warn-bg: #362A12; --bad: #FF8A78; --bad-bg: #3A1D19;
+  --code-bg: #0B0F0E; --code-ink: #E6EAE4;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--f-body); font-size: 17px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 48px;
+}
+.app { max-width: 920px; margin: 0 auto; display: flex; flex-direction: column; gap: 26px; }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.2; text-wrap: balance; margin: 0; }
+p, ul, ol { margin: 0; }
+button, textarea { font: inherit; color: inherit; }
+button:focus-visible, textarea:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.top h1 { font-size: 22px; }
+.top p { font-size: 14px; color: var(--muted); }
+.total { font-size: 14px; color: var(--muted); background: var(--surface); border: 1px solid var(--line); padding: 8px 14px; border-radius: 999px; font-variant-numeric: tabular-nums; }
+.total b { color: var(--ink); }
+
+/* home */
+.hero { display: flex; flex-direction: column; gap: 12px; }
+.hero h2 { font-size: clamp(26px, 4.2vw, 38px); max-width: 720px; }
+.hero p { color: var(--muted); font-size: 18px; max-width: 68ch; }
+.how { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.how div { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; font-size: 14px; color: var(--muted); }
+.how b { display: block; color: var(--accent); font-family: var(--f-display); font-size: 15px; margin-bottom: 2px; }
+.tasks { display: flex; flex-direction: column; gap: 12px; }
+.task {
+  text-align: left; cursor: pointer; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 18px 22px; display: grid; grid-template-columns: 1fr auto; gap: 6px 18px; align-items: center; transition: border-color .15s;
+}
+.task:hover { border-color: var(--accent); }
+.task h3 { font-size: 18px; }
+.task .sub { color: var(--muted); font-size: 15px; grid-column: 1; }
+.task .meta { font-size: 13px; color: var(--muted); grid-column: 1; }
+.task .st { grid-row: 1 / span 3; grid-column: 2; }
+.pill { font-size: 13px; font-weight: 600; padding: 5px 12px; border-radius: 999px; background: var(--bg); color: var(--muted); white-space: nowrap; }
+.pill.done { background: var(--ok-bg); color: var(--ok); }
+.note { font-size: 14px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+
+/* task view */
+.back { align-self: flex-start; background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px 0; font-weight: 600; }
+.back:hover { color: var(--accent); }
+.mhead { display: flex; flex-direction: column; gap: 8px; }
+.tag { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.mhead h2 { font-size: clamp(24px, 3.6vw, 32px); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(18px, 3vw, 28px); display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.panel h3 { font-size: 18px; display: flex; align-items: center; gap: 10px; }
+.panel h3 .no { width: 30px; height: 30px; border-radius: 9px; display: inline-grid; place-items: center; background: var(--accent); color: var(--accent-ink); font-size: 14px; flex-shrink: 0; }
+.panel.locked { opacity: .5; }
+.facts { padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.material { background: var(--bg); border-radius: 12px; padding: 14px 16px; white-space: pre-wrap; font-size: 15px; line-height: 1.6; max-height: 320px; overflow: auto; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+textarea { width: 100%; min-height: 170px; resize: vertical; background: var(--bg); border: 2px solid var(--line); border-radius: 14px; padding: 14px 16px; line-height: 1.55; }
+textarea:focus { border-color: var(--accent); outline: none; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.btn { cursor: pointer; border: none; border-radius: 12px; padding: 12px 20px; font-weight: 700; background: var(--accent); color: var(--accent-ink); text-decoration: none; display: inline-block; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn.ghost:hover { border-color: var(--accent); }
+.status { font-size: 14px; color: var(--ok); min-height: 1em; }
+
+.checks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.chk { border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.chk b { font-size: 15px; }
+.chk.yes { background: var(--ok-bg); } .chk.yes b { color: var(--ok); }
+.chk.no { background: var(--warn-bg); } .chk.no b { color: var(--warn); }
+.alert { border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+.alert.bad { background: var(--bad-bg); } .alert.bad b { color: var(--bad); }
+.alert.ok { background: var(--ok-bg); } .alert.ok b { color: var(--ok); }
+.alert.warn { background: var(--warn-bg); } .alert.warn b { color: var(--warn); }
+details { background: var(--bg); border-radius: 14px; padding: 12px 16px; }
+summary { cursor: pointer; font-weight: 700; }
+.code { font-family: 'Courier New', monospace; font-size: 15px; line-height: 1.6; background: var(--code-bg); color: var(--code-ink); border-radius: 14px; padding: 16px 18px; white-space: pre-wrap; overflow-wrap: anywhere; }
+details .code { margin-top: 10px; }
+.ais { display: flex; gap: 10px; flex-wrap: wrap; }
+.list { display: flex; flex-direction: column; gap: 8px; }
+.list label { display: flex; gap: 12px; align-items: flex-start; background: var(--bg); border-radius: 12px; padding: 12px 14px; cursor: pointer; }
+.list input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--accent); flex-shrink: 0; }
+.donebox { background: var(--ok-bg); border-radius: 14px; padding: 16px 18px; }
+.donebox b { color: var(--ok); }
+
+@media (max-width: 720px) {
+  .how { grid-template-columns: 1fr 1fr; }
+  .checks { grid-template-columns: 1fr 1fr; }
+  .task { grid-template-columns: 1fr; }
+  .task .st { grid-row: auto; grid-column: 1; justify-self: start; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ===== Тема «ШІ-ядро»: глибокий космос, сітка, неонові голограми (одна темна тема свідомо) ===== */
+:root:root:root {
+  --bg: #070B1A;
+  --surface: rgba(16, 24, 52, 0.74);
+  --ink: #E6EEFF;
+  --muted: #93A6CB;
+  --line: rgba(98, 140, 255, 0.28);
+  --accent: #28E0FF;
+  --accent-ink: #04121A;
+  --accent-soft: rgba(40, 224, 255, 0.14);
+  --violet: #9B6BFF;
+  --ok: #3DF5B0; --ok-bg: rgba(61, 245, 176, 0.12);
+  --warn: #FFC857; --warn-bg: rgba(255, 200, 87, 0.12);
+  --bad: #FF5C9A; --bad-bg: rgba(255, 92, 154, 0.13);
+  --code-bg: #030612; --code-ink: #BFF6FF;
+  --f-display: 'Exo 2', 'Trebuchet MS', sans-serif;
+  --f-mono: 'JetBrains Mono', 'Courier New', monospace;
+  color-scheme: dark;
+}
+body {
+  background:
+    radial-gradient(1100px 600px at 90% -10%, rgba(155, 107, 255, 0.28), transparent 60%),
+    radial-gradient(900px 520px at -10% 5%, rgba(40, 224, 255, 0.16), transparent 60%),
+    #070B1A;
+  background-attachment: fixed;
+}
+body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image: linear-gradient(rgba(98, 140, 255, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(98, 140, 255, 0.08) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 80%); mask-image: linear-gradient(to bottom, #000 0%, transparent 80%);
+}
+.app { position: relative; z-index: 1; }
+
+/* шапка */
+.brand { display: flex; align-items: center; gap: 16px; }
+.core { width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0; position: relative;
+  background: radial-gradient(circle at 35% 35%, #E8FDFF 0%, #28E0FF 30%, #6C3BFF 72%, #1A1050 100%);
+  box-shadow: 0 0 22px rgba(40, 224, 255, 0.7), 0 0 60px rgba(155, 107, 255, 0.4);
+  animation: corePulse 3.2s ease-in-out infinite; }
+.core::after { content: ""; position: absolute; inset: -8px; border-radius: 50%; border: 1px dashed rgba(40, 224, 255, 0.55); animation: coreSpin 14s linear infinite; }
+@keyframes corePulse { 50% { box-shadow: 0 0 34px rgba(40, 224, 255, 0.95), 0 0 84px rgba(155, 107, 255, 0.55); } }
+@keyframes coreSpin { to { transform: rotate(360deg); } }
+.top h1 { font-family: var(--f-display); font-weight: 800; font-size: 24px; text-transform: uppercase; letter-spacing: 0.08em; }
+.top p { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.04em; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+.online { color: var(--ok); letter-spacing: 0.12em; text-transform: uppercase; }
+.online::before { content: "●"; margin-right: 6px; animation: blink 1.6s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0.25; } }
+.total { font-family: var(--f-mono); font-size: 13px; background: var(--surface); border-color: var(--line); box-shadow: 0 0 18px rgba(40, 224, 255, 0.12); }
+
+/* заголовки */
+.hero h2, .mhead h2 { font-weight: 800; background: linear-gradient(90deg, #E6EEFF 0%, #28E0FF 55%, #B794FF 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tag { font-family: var(--f-mono); letter-spacing: 0.14em; }
+.tag::before { content: "◇ "; }
+.panel h3 { font-family: var(--f-display); font-weight: 700; letter-spacing: 0.02em; }
+
+/* панелі-голограми */
+.panel, .task, .how div { background: var(--surface); border: 1px solid var(--line); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.panel { position: relative; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(40, 224, 255, 0.08); }
+.panel::before, .panel::after { content: ""; position: absolute; width: 20px; height: 20px; pointer-events: none; border: 2px solid var(--accent); filter: drop-shadow(0 0 6px rgba(40, 224, 255, 0.7)); }
+.panel::before { top: -1px; left: -1px; border-right: none; border-bottom: none; border-top-left-radius: var(--radius); }
+.panel::after { bottom: -1px; right: -1px; border-left: none; border-top: none; border-bottom-right-radius: var(--radius); }
+.panel.locked::before, .panel.locked::after { border-color: var(--muted); filter: none; }
+.panel h3 .no { width: 36px; height: 32px; border-radius: 0; clip-path: polygon(25% 2%, 75% 2%, 100% 50%, 75% 98%, 25% 98%, 0 50%); background: linear-gradient(135deg, #28E0FF, #9B6BFF); color: #04121A; font-family: var(--f-mono); font-weight: 600; }
+.how div { border-radius: 14px; }
+.how b { font-family: var(--f-mono); color: var(--accent); text-shadow: 0 0 10px rgba(40, 224, 255, 0.6); }
+.task { position: relative; overflow: hidden; }
+.task:hover { border-color: var(--accent); box-shadow: 0 0 26px rgba(40, 224, 255, 0.25); }
+.task::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, #28E0FF, #9B6BFF); opacity: 0; transition: opacity .2s; }
+.task:hover::after { opacity: 1; }
+.pill { font-family: var(--f-mono); font-size: 12px; background: rgba(3, 6, 18, 0.6); border: 1px solid var(--line); }
+.pill.done { border-color: rgba(61, 245, 176, 0.45); box-shadow: 0 0 12px rgba(61, 245, 176, 0.2); }
+.meta { font-family: var(--f-mono); font-size: 12px; }
+
+/* кнопки */
+.btn { background: linear-gradient(135deg, #28E0FF, #7A8CFF); color: #04121A; box-shadow: 0 0 18px rgba(40, 224, 255, 0.35); text-transform: uppercase; letter-spacing: 0.05em; font-size: 14px; transition: box-shadow .2s, transform .2s; }
+.btn:hover { box-shadow: 0 0 30px rgba(40, 224, 255, 0.65); transform: translateY(-1px); }
+.btn.ghost { background: rgba(3, 6, 18, 0.5); color: var(--ink); border: 1px solid var(--line); box-shadow: none; text-transform: none; letter-spacing: 0; font-size: 15px; }
+.btn.ghost:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 18px rgba(40, 224, 255, 0.3); }
+.back { font-family: var(--f-mono); font-size: 14px; }
+
+/* поля і термінали */
+textarea { background: rgba(3, 6, 18, 0.75); border: 1px solid var(--line); font-family: var(--f-mono); font-size: 15px; caret-color: var(--accent); }
+textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(40, 224, 255, 0.15), 0 0 26px rgba(40, 224, 255, 0.2); }
+textarea::placeholder { color: rgba(147, 166, 203, 0.6); }
+.material { background: rgba(3, 6, 18, 0.65); border: 1px solid var(--line); font-family: var(--f-mono); font-size: 14px; }
+.code { border: 1px solid rgba(40, 224, 255, 0.3); font-family: var(--f-mono); font-size: 14px; box-shadow: inset 0 0 30px rgba(40, 224, 255, 0.06); }
+.code::before { content: "> запит"; display: block; color: var(--accent); font-size: 12px; letter-spacing: 0.12em; margin-bottom: 8px; opacity: 0.8; }
+details, .list label { background: rgba(3, 6, 18, 0.5); border: 1px solid var(--line); }
+.list label:hover { border-color: var(--accent); }
+
+/* статуси */
+.chk { border: 1px solid transparent; }
+.chk b { font-family: var(--f-mono); font-size: 14px; letter-spacing: 0.03em; }
+.chk.yes { border-color: rgba(61, 245, 176, 0.4); }
+.chk.no { border-color: rgba(255, 200, 87, 0.35); }
+.alert { border: 1px solid transparent; }
+.alert.ok { border-color: rgba(61, 245, 176, 0.35); }
+.alert.warn { border-color: rgba(255, 200, 87, 0.35); }
+.alert.bad { border-color: rgba(255, 92, 154, 0.5); box-shadow: 0 0 22px rgba(255, 92, 154, 0.18); }
+.donebox { border: 1px solid rgba(61, 245, 176, 0.5); box-shadow: 0 0 26px rgba(61, 245, 176, 0.22); }
+.note { border-top-color: var(--line); font-size: 13px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .core, .core::after, .online::before { animation: none !important; }
+}
+
+/* ===== Тема «Живе сяйво»: світлий фон, анімована аврора, скляні панелі з неоновими кутами ===== */
+:root:root:root:root {
+  --bg: #F3F5FF;
+  --surface: rgba(255, 255, 255, 0.78);
+  --ink: #141A3A;
+  --muted: #4E5A80;
+  --line: rgba(108, 77, 255, 0.22);
+  --accent: #6C4DFF;
+  --accent-ink: #FFFFFF;
+  --accent-soft: rgba(108, 77, 255, 0.12);
+  --ok: #0C8F61; --ok-bg: rgba(12, 143, 97, 0.12);
+  --warn: #9A6200; --warn-bg: rgba(255, 184, 0, 0.18);
+  --bad: #C9295F; --bad-bg: rgba(214, 51, 108, 0.12);
+  --code-bg: #141A46; --code-ink: #D8F6FF;
+  color-scheme: light;
+}
+body { background: #F3F5FF; }
+body::before {
+  z-index: 1;
+  background-image: linear-gradient(rgba(108, 77, 255, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(108, 77, 255, 0.07) 1px, transparent 1px);
+}
+body::after {
+  content: ""; position: fixed; inset: -20%; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(38% 34% at 18% 18%, rgba(0, 212, 255, 0.42), transparent 70%),
+    radial-gradient(34% 34% at 82% 14%, rgba(140, 92, 255, 0.42), transparent 70%),
+    radial-gradient(40% 38% at 72% 84%, rgba(255, 79, 163, 0.32), transparent 70%),
+    radial-gradient(34% 30% at 14% 86%, rgba(140, 240, 110, 0.34), transparent 70%);
+  filter: blur(30px);
+  animation: aurora 26s ease-in-out infinite alternate;
+}
+@keyframes aurora {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  50% { transform: translate(3%, -2%) rotate(8deg) scale(1.08); }
+  100% { transform: translate(-3%, 2%) rotate(-6deg) scale(1.04); }
+}
+.app { z-index: 2; }
+
+.core { background: radial-gradient(circle at 35% 35%, #FFFFFF 0%, #00D4FF 30%, #6C4DFF 66%, #FF4FA3 100%); box-shadow: 0 0 22px rgba(0, 212, 255, 0.6), 0 0 50px rgba(140, 92, 255, 0.45); }
+.core::after { border-color: rgba(108, 77, 255, 0.55); }
+@keyframes corePulse { 50% { box-shadow: 0 0 32px rgba(0, 212, 255, 0.85), 0 0 70px rgba(255, 79, 163, 0.45); } }
+.top h1 { background: linear-gradient(90deg, #141A3A, #6C4DFF); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.total { background: var(--surface); box-shadow: 0 6px 20px rgba(76, 60, 200, 0.12); }
+
+.hero h2, .mhead h2 { background: linear-gradient(90deg, #141A3A 0%, #6C4DFF 50%, #00A6CF 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.panel { box-shadow: 0 12px 40px rgba(76, 60, 200, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9); }
+.panel::before, .panel::after { border-color: #6C4DFF; filter: drop-shadow(0 0 6px rgba(108, 77, 255, 0.55)); }
+.panel::after { border-color: #00B8D9; filter: drop-shadow(0 0 6px rgba(0, 184, 217, 0.6)); }
+.panel h3 .no { background: linear-gradient(135deg, #00D4FF, #6C4DFF 55%, #FF4FA3); color: #FFFFFF; }
+.how div { box-shadow: 0 6px 20px rgba(76, 60, 200, 0.08); }
+.how b { color: #6C4DFF; text-shadow: none; }
+.task { box-shadow: 0 6px 22px rgba(76, 60, 200, 0.08); }
+.task:hover { border-color: #6C4DFF; box-shadow: 0 10px 30px rgba(108, 77, 255, 0.22); transform: translateY(-2px); }
+.task::after { width: 4px; background: linear-gradient(180deg, #00D4FF, #6C4DFF, #FF4FA3); }
+.pill { background: rgba(255, 255, 255, 0.75); }
+
+.btn { background: linear-gradient(135deg, #6C4DFF, #00B8D9); background-size: 160% 160%; color: #FFFFFF; box-shadow: 0 6px 20px rgba(108, 77, 255, 0.35); }
+.btn:hover { background-position: 100% 0; box-shadow: 0 10px 30px rgba(108, 77, 255, 0.5); }
+.btn.ghost { background: rgba(255, 255, 255, 0.75); color: var(--ink); }
+.btn.ghost:hover { color: #6C4DFF; border-color: #6C4DFF; box-shadow: 0 6px 20px rgba(108, 77, 255, 0.2); }
+
+textarea { background: rgba(255, 255, 255, 0.92); }
+textarea:focus { border-color: #6C4DFF; box-shadow: 0 0 0 3px rgba(108, 77, 255, 0.15), 0 8px 26px rgba(108, 77, 255, 0.18); }
+textarea::placeholder { color: rgba(78, 90, 128, 0.6); }
+.material { background: rgba(243, 245, 255, 0.92); }
+.code { border-color: rgba(108, 77, 255, 0.35); box-shadow: 0 8px 24px rgba(20, 26, 70, 0.2); }
+.code::before { color: #6FE6FF; }
+details, .list label { background: rgba(255, 255, 255, 0.65); }
+.list label:hover { border-color: #6C4DFF; }
+.alert.bad { box-shadow: 0 6px 20px rgba(214, 51, 108, 0.15); }
+.donebox { box-shadow: 0 8px 26px rgba(12, 143, 97, 0.2); }
+
+@media (prefers-reduced-motion: reduce) {
+  body::after { animation: none !important; }
+}
+
+.tnav { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 16px 0 4px; border-top: 1px solid var(--line); }
+
+/* ===== Сцена-портал з живою нейромережею ===== */
+body::before { display: none; }
+.stage {
+  position: relative; overflow: hidden; border-radius: 30px; min-height: 460px;
+  padding: clamp(26px, 5vw, 56px); display: flex; flex-direction: column; justify-content: flex-end;
+  background: radial-gradient(120% 130% at 85% 0%, #3E1F96 0%, #17145A 42%, #080B2E 100%);
+  color: #FFFFFF; box-shadow: 0 30px 80px rgba(60, 40, 180, 0.35), 0 0 0 1px rgba(160, 140, 255, 0.25) inset;
+}
+.stage.small { min-height: 230px; }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(8, 11, 46, 0.82) 0%, rgba(8, 11, 46, 0.45) 50%, rgba(8, 11, 46, 0) 75%); }
+.stage-in { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 16px; max-width: 620px; min-width: 0; }
+.stage .kicker { font-family: var(--f-mono); font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: #6FE6FF; text-shadow: 0 0 12px rgba(111, 230, 255, 0.7); }
+.stage h2 { font-family: var(--f-display); font-weight: 800; font-size: clamp(32px, 6vw, 60px); line-height: 1.05; background: linear-gradient(90deg, #FFFFFF 0%, #A8F1FF 55%, #FFA6D6 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.stage.small h2 { font-size: clamp(24px, 4.2vw, 40px); }
+.stage .sub { font-size: 19px; line-height: 1.5; color: rgba(232, 236, 255, 0.88); max-width: 56ch; }
+.stage.small .sub { font-size: 16px; }
+.stage .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.stage .chips span { font-family: var(--f-mono); font-size: 13px; padding: 7px 14px; border-radius: 999px; color: #FFFFFF; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.25); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.stage .btn.cta { font-size: 16px; padding: 16px 28px; border-radius: 14px; background: linear-gradient(135deg, #6FE6FF 0%, #8C5CFF 50%, #FF4FA3 100%); background-size: 180% 180%; color: #FFFFFF; box-shadow: 0 0 30px rgba(140, 92, 255, 0.6), 0 0 60px rgba(111, 230, 255, 0.25); }
+.stage .btn.cta:hover { background-position: 100% 0; box-shadow: 0 0 40px rgba(255, 79, 163, 0.6), 0 0 80px rgba(111, 230, 255, 0.35); }
+.stage .back { color: rgba(232, 236, 255, 0.75); align-self: flex-start; }
+.stage .back:hover { color: #6FE6FF; }
+@media (max-width: 640px) {
+  .stage { min-height: 520px; }
+  .stage.small { min-height: 260px; }
+  .stage::after { background: linear-gradient(0deg, rgba(8, 11, 46, 0.9) 0%, rgba(8, 11, 46, 0.5) 55%, rgba(8, 11, 46, 0.1) 100%); }
+}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <div class="core" aria-hidden="true"></div>
+      <div>
+        <h1>ШІ-тренажер</h1>
+        <p>Академія Viatec · ШІ в роботі <span class="online">ШІ-ядро онлайн</span></p>
+      </div>
+    </div>
+    <p class="total" id="total"></p>
+  </header>
+  <main id="view"></main>
+  <p class="note">Тренажер безкоштовний: ви працюєте у своєму ШІ-помічнику (ChatGPT, Claude, Gemini). Сама сторінка нічого нікуди не надсилає. Усі імена, компанії й номери в задачах вигадані — і у вашому запиті мають бути лише такі.</p>
+</div>
+
+<script>
+(function () {
+  var KEY = 'aiTrainer.v2';
+  function load() { try { return JSON.parse(localStorage.getItem(KEY)) || { done: {}, drafts: {} }; } catch (e) { return { done: {}, drafts: {} }; } }
+  function save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
+  var S = load(); S.done = S.done || {}; S.drafts = S.drafts || {};
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  // ---------- tasks ----------
+  var TASKS = [
+    {
+      id: 'lyst', title: 'Лист клієнту про затримку поставки', lessons: 'Уроки 0.3 · 1.4', time: '10 хв',
+      sub: 'Перший запит за формулою: роль, ситуація, завдання, вигляд.',
+      scenario: 'Ви менеджер з продажу. Постійному клієнту — монтажній компанії — треба повідомити про затримку поставки. Напишіть запит, щоб ШІ підготував лист.',
+      facts: ['Замовлення: 20 відеокамер', 'Причина: затримка на митниці, приблизно на тиждень', 'Нова дата поставки: 25 листопада', 'Компенсація: безкоштовна доставка цього замовлення', 'Тон: діловий, дружній, клієнт з нами 2 роки'],
+      goal: 'отримати від ШІ короткий діловий лист клієнту про затримку поставки з новою датою і компенсацією',
+      bonus: [{ re: /нічого не (додавай|вигадуй)|не вигадуй|лише ці факти|тільки ці факти|не обіцяй/i, ok: 'Ви заборонили ШІ вигадувати — чудово.', no: 'Додайте «Нічого не додавай від себе», щоб ШІ не пообіцяв зайвого.' }],
+      result: ['Є тема листа', 'Лист не довший за 120 слів', 'Є нова дата — 25 листопада', 'Є вибачення і безкоштовна доставка', 'Немає обіцянок, яких не було у фактах'],
+      example: 'Ти — менеджер з продажу дистриб’ютора систем безпеки. Пишеш клієнтам коротко і ввічливо.\n\nКлієнт — монтажна компанія, працюємо 2 роки. Поставка 20 відеокамер затримується приблизно на тиждень через митницю.\n\nНапиши лист клієнту: повідом нову дату — 25 листопада, вибачся і запропонуй безкоштовну доставку цього замовлення. Нічого не додавай від себе.\n\nДо 120 слів, з темою листа, тон — діловий дружній.'
+    },
+    {
+      id: 'dokument', title: 'Підсумок регламенту для новачка', lessons: 'Урок 1.2', time: '10 хв',
+      sub: 'Робота з документом: підсумок під конкретного читача з номерами пунктів.',
+      scenario: 'Новий колега питає, як оформити відрядження. Напишіть запит, щоб ШІ склав для нього короткий підсумок регламенту. Регламент нижче — скопіюйте його у свій ШІ разом із запитом.',
+      material: 'Регламент відряджень (фрагмент, вигаданий приклад)\n\n1. Відрядження погоджує керівник відділу не пізніше ніж за 3 робочі дні до виїзду.\n2. Заявку подають через внутрішню форму із зазначенням мети, дат і бюджету.\n3. Добові становлять 600 грн на день. Проживання компенсують за фактом, але не більше 2000 грн за ніч.\n4. Квитки купує офіс-менеджер. Самостійна купівля — лише з дозволу керівника.\n5. Звіт про відрядження і документи про витрати подають протягом 5 робочих днів після повернення.\n6. Витрати без підтвердних документів не компенсуються.',
+      goal: 'отримати короткий і зрозумілий підсумок регламенту відряджень для нового працівника',
+      bonus: [{ re: /пункт|номер|розділ/i, ok: 'Ви просите номери пунктів — підсумок легко перевірити.', no: 'Попросіть біля кожного пункту підсумку вказати номер пункту регламенту.' }, { re: /новач|нов(ий|ого|ому) (колег|працівник|співробітник)|перш(ий|ого) день/i, ok: 'Ви сказали, для кого підсумок.', no: 'Скажіть, для кого підсумок: новий працівник, який бачить регламент уперше.' }],
+      result: ['Є терміни: 3 робочі дні до виїзду і 5 днів на звіт', 'Є суми: 600 грн добових і до 2000 грн за ніч', 'Біля пунктів є номери з регламенту', 'Цифри збігаються з оригіналом', 'Немає того, чого в регламенті не було'],
+      example: 'Я — новий працівник відділу продажу, вперше їду у відрядження.\n\nОсь регламент відряджень: […вставте текст…]\n\nСклади для мене короткий підсумок: що зробити до поїздки, під час і після. Обов’язково — усі терміни і суми.\n\nСписком, до 8 пунктів, простими словами. Біля кожного пункту — номер пункту регламенту. Відповідай лише на основі цього тексту.'
+    },
+    {
+      id: 'poshuk', title: 'Тренди ринку з перевіреними джерелами', lessons: 'Урок 1.3', time: '15 хв',
+      sub: 'Пошук в інтернеті з посиланнями і перевірка фактів.',
+      scenario: 'Керівник просить коротко: що зараз відбувається на ринку систем відеоспостереження. Напишіть запит, щоб ШІ знайшов в інтернеті 3 актуальні тренди. Перед запуском увімкніть у своєму ШІ пошук.',
+      facts: ['Потрібно: 3 тренди за останній рік', 'Для кожного — посилання і дата джерела', 'Краще галузеві видання, ніж реклама виробників'],
+      goal: 'знайти в інтернеті 3 актуальні тренди ринку відеоспостереження з посиланнями і датами',
+      bonus: [{ re: /посилан|джерел/i, ok: 'Ви просите джерела — факти можна перевірити.', no: 'Попросіть посилання на джерело біля кожного тренду.' }, { re: /дат|рік|року|свіж|останн/i, ok: 'Ви обмежили період — отримаєте свіже.', no: 'Вкажіть період: «за останній рік» і «з датою джерела».' }, { re: /знайди|пошук|в інтернеті|інтернет/i, ok: 'Ви прямо просите шукати в інтернеті.', no: 'Напишіть прямо: «Знайди в інтернеті…» — і увімкніть пошук.' }],
+      result: ['Біля кожного тренду є посилання', 'Я відкрив щонайменше 2 посилання — сторінки існують', 'На сторінці справді написано те, що переказав ШІ', 'Джерела не старші за рік', 'Немає точних цифр без джерела'],
+      example: 'Ти — аналітик ринку систем безпеки.\n\nЯ готую коротку довідку для керівника дистриб’ютора відеоспостереження в Україні.\n\nЗнайди в інтернеті 3 актуальні тренди ринку систем відеоспостереження за останній рік. Перевагу віддавай галузевим виданням, а не рекламі виробників.\n\nДля кожного тренду: 2 речення суті, посилання на джерело і дата публікації. Якщо джерела суперечать одне одному — скажи про це.'
+    },
+    {
+      id: 'tablytsia', title: 'Зведення продажів по менеджерах', lessons: 'Урок 1.5', time: '10 хв',
+      sub: 'Таблиця: зведення, формула для Excel і перевірка підсумку.',
+      scenario: 'Є вивантаження продажів за жовтень (дані вигадані). Напишіть запит, щоб ШІ порахував суму продажів по кожному менеджеру і загалом, і дав формулу для Excel. Таблицю скопіюйте у свій ШІ разом із запитом.',
+      material: 'Дата;Менеджер;Товар;Сума, грн\n01.10;Менеджер 1;Камера;12400\n03.10;Менеджер 2;Комутатор;8600\n05.10;Менеджер 1;Домофон;5300\n08.10;Менеджер 3;Камера;15800\n10.10;Менеджер 2;Камера;9900\n14.10;Менеджер 1;Комутатор;7200\n17.10;Менеджер 3;Домофон;4600\n21.10;Менеджер 2;ДБЖ;11300\n24.10;Менеджер 1;Камера;13700\n28.10;Менеджер 3;ДБЖ;10200',
+      goal: 'отримати суми продажів по кожному менеджеру і загалом, а також формулу для Excel',
+      bonus: [{ re: /формул|excel|ексель|таблиц(і|ях) google/i, ok: 'Ви просите формулу — зможете порахувати в Excel самі.', no: 'Попросіть формулу для Excel (SUMIFS), щоб перерахувати самостійно.' }, { re: /колонк|стовп|a —|b —|c —|d —|рядк/i, ok: 'Ви описали колонки — формула буде точною.', no: 'Опишіть колонки: A — дата, B — менеджер, C — товар, D — сума.' }],
+      result: ['Менеджер 1 — 38 600 грн', 'Менеджер 2 — 29 800 грн', 'Менеджер 3 — 30 600 грн', 'Разом — 99 000 грн', 'Формула від ШІ працює в Excel і дає ті самі суми'],
+      example: 'Я працюю в Excel 365. Ось таблиця продажів за жовтень: A — дата, B — менеджер, C — товар, D — сума в гривнях, рядки 2–11:\n[…вставте таблицю…]\n\nПорахуй суму продажів по кожному менеджеру і загалом. Результат — таблицею: менеджер · сума, і рядок «Разом».\n\nДай також формулу SUMIFS для Excel, щоб я перерахував сам, і поясни її простими словами.'
+    },
+    {
+      id: 'znesob', title: 'Відповідь клієнту без персональних даних', lessons: 'Уроки 0.4 · 1.6', time: '10 хв',
+      sub: 'Знеособлення: замінити все особисте на [позначки] ще до ШІ.',
+      scenario: 'Клієнтка надіслала лист (нижче). Підготуйте з ШІ відповідь. Але спершу знеособте лист: у запиті не має бути жодного імені, телефону, адреси чи коду — лише [позначки].',
+      material: 'Добрий день! Я Марина Литвин, ФОП, РНОКПП 3124509876. Хочу замовити 6 камер і реєстратор для магазину на вул. Шевченка, 21, м. Вінниця. Мій телефон 067 555 12 34, пошта marina.l@example.ua. Чи можете зробити знижку і коли буде доставка?',
+      facts: ['Знижка 5% діє від 10 камер — у клієнтки 6, тож запропонуйте докупити до 10', 'Доставка — 2–3 робочі дні', 'Тон — ввічливий, діловий'],
+      goal: 'підготувати відповідь клієнтці про знижку і доставку, не передаючи ШІ її персональні дані',
+      strictPii: true,
+      bonus: [{ re: /\[[^\]]+\]/, ok: 'Ви використали [позначки] — так і треба.', no: 'Замініть дані клієнтки на [ім’я], [телефон], [адреса] — або приберіть їх зовсім.' }],
+      result: ['У моєму запиті не було жодних персональних даних', 'У відповіді є умова знижки: від 10 камер', 'У відповіді є термін доставки: 2–3 робочі дні', 'Тон ввічливий, немає зайвих обіцянок', 'Справжнє ім’я я підставлю вже у своїй пошті'],
+      example: 'Ти — менеджер з продажу дистриб’ютора систем безпеки.\n\nОсь лист клієнтки (знеособлений): «Добрий день! Я [ім’я], ФОП. Хочу замовити 6 камер і реєстратор для магазину. Чи можете зробити знижку і коли буде доставка?»\n\nНапиши відповідь: знижка 5% діє від 10 камер — запропонуй докупити до 10; доставка — 2–3 робочі дні. Нічого не додавай від себе.\n\nДо 100 слів, звертання «[ім’я]», тон — ввічливий діловий.'
+    },
+    {
+      id: 'ton', title: 'Спокійна відповідь на різкий лист', lessons: 'Урок 1.4', time: '10 хв',
+      sub: 'Складний лист: факти, розуміння, наступний крок.',
+      scenario: 'Партнер надіслав різкий лист (нижче). Напишіть запит, щоб ШІ допоміг відповісти спокійно і зберегти стосунки.',
+      material: 'Ви вже втретє зриваєте терміни! Скільки можна?! Якщо до п’ятниці товару не буде — шукаємо іншого постачальника.',
+      facts: ['Товар буде в четвер — на день раніше за дедлайн', 'Причина затримок — перевізник, ми його вже змінили', 'Компенсація — безкоштовна доставка наступного замовлення', 'Мета — зберегти партнера'],
+      goal: 'написати спокійну відповідь на різкий лист партнера і зберегти стосунки',
+      bonus: [{ re: /мета|щоб зберегти|зберег|не втратити/i, ok: 'Ви сказали мету листа.', no: 'Назвіть мету: «зберегти партнера» — це змінює тон відповіді.' }, { re: /тон|спокійн|ввічлив|без емоц/i, ok: 'Ви задали тон.', no: 'Задайте тон: спокійний, без виправдань і без емоцій.' }],
+      result: ['Є визнання проблеми, без звинувачень', 'Є конкретна дата — четвер', 'Сказано, що ми вже змінили перевізника', 'Є компенсація — безкоштовна доставка', 'Тон спокійний, немає зайвих обіцянок'],
+      example: 'Ти — досвідчений менеджер з роботи з ключовими клієнтами.\n\nПартнер надіслав різкий лист: «Ви вже втретє зриваєте терміни! Скільки можна?! Якщо до п’ятниці товару не буде — шукаємо іншого постачальника».\n\nНапиши відповідь: визнай проблему без виправдань; товар буде в четвер; причина — перевізник, ми його вже змінили; компенсація — безкоштовна доставка наступного замовлення. Мета — зберегти партнера. Нічого не додавай від себе.\n\nДо 120 слів, тон — спокійний, людяний.'
+    }
+  ];
+
+  // ---------- prompt analysis ----------
+  var RX = {
+    role: /(^|[\s,.!?«"])ти\s*(—|–|-|є\s)|ти\s+(досвідчен|експерт|фахів|менеджер|юрист|бухгалтер|маркетолог|аналітик|копірайтер|редактор|тренер|помічник|спеціаліст)|у ролі|в ролі|уяви,?\s+що ти|виступи як|дій як/i,
+    context: /клієнт|партнер|для мене|для нов|я\s*(—|–|-)|я (працюю|менеджер|готую|новий|нова)|ми\s*(—|–|-)|наша компанія|ситуаці|контекст|читатиме|адресат|керівник|колег|працюємо|бо |тому що|оскільки/i,
+    task: /(напиши|склади|створи|підготуй|перепиши|переклади|знайди|порівняй|поясни|зроби|скороти|запропонуй|придумай|перевір|проаналізуй|витягни|опиши|порахуй|відповідай|розбий|дай)/i,
+    format: /таблиц|списк|список|пункт|слів|речен|абзац|сторінк|тон|стиль|формат|коротк|до \d+|заголов|тем(у|ою|а) листа|маркован|нумерован|структур/i
+  };
+  var PII = [
+    { re: /(\+?38\s?)?\(?0\d{2}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}/, name: 'номер телефону' },
+    { re: /[\w.+-]+@[\w-]+\.[\w.]+/, name: 'адреса пошти' },
+    { re: /\b\d{10}\b/, name: 'схоже на РНОКПП (10 цифр)' },
+    { re: /\b\d{8}\b/, name: 'схоже на ЄДРПОУ (8 цифр)' },
+    { re: /UA\d{27}/i, name: 'номер рахунку IBAN' },
+    { re: /\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/, name: 'номер картки' },
+    { re: /вул\.?\s+[А-ЯІЇЄҐ]|вулиц[яі]\s+[А-ЯІЇЄҐ]|просп\.?\s+[А-ЯІЇЄҐ]/, name: 'адреса' },
+    { re: /Марин[аиі] Литвин|Литвин/i, name: 'ім’я клієнтки з листа' }
+  ];
+  function analyze(t, task) {
+    var words = (t.trim().match(/\S+/g) || []).length;
+    var res = {
+      words: words,
+      role: RX.role.test(t), context: RX.context.test(t) && words >= 15, task: RX.task.test(t), format: RX.format.test(t),
+      pii: PII.filter(function (p) { return p.re.test(t); }).map(function (p) { return p.name; }),
+      bonus: (task.bonus || []).map(function (b) { return { hit: b.re.test(t), ok: b.ok, no: b.no }; })
+    };
+    return res;
+  }
+
+  function coachPrompt(task, p) {
+    return 'Ти — тренер з роботи з ШІ для працівників компанії. Оціни мій запит до ШІ.\n\n' +
+      'Моя задача: ' + task.goal + '.\n\n' +
+      'Мій запит:\n"""\n' + p.trim() + '\n"""\n\n' +
+      'Оціни запит за формулою «роль — ситуація — завдання — вигляд»: що є, чого бракує. ' +
+      'Перевір, чи немає в запиті персональних або конфіденційних даних. ' +
+      'Дай оцінку від 1 до 10, три конкретні поради і покращену версію мого запиту. Відповідай українською, коротко.';
+  }
+
+  // ---------- views ----------
+  var view = document.getElementById('view');
+  function renderTotal() {
+    var n = TASKS.filter(function (t) { return S.done[t.id]; }).length;
+    document.getElementById('total').innerHTML = 'Виконано: <b>' + n + ' з ' + TASKS.length + '</b>';
+  }
+
+  function home() {
+    var html = '<section class="stage"><canvas aria-hidden="true"></canvas><div class="stage-in"><p class="kicker">Академія Viatec · ШІ-тренажер</p><h2>Тренуйте ШІ-навички на справжніх робочих задачах</h2><p class="sub">Ви пишете запит, тренажер одразу підказує, чого бракує, ви запускаєте його у своєму ШІ — і отримуєте оцінку від ШІ-тренера.</p><div class="chips"><span>6 задач</span><span>~10 хв кожна</span><span>безкоштовно</span><span>ChatGPT · Claude · Gemini</span></div><div class="row"><button class="btn cta" id="startFirst">Почати тренування →</button></div></div></section>' +
+      '<div class="how"><div><b>0</b>Відкриваєте ШІ в браузері</div><div><b>1</b>Пишете запит</div><div><b>2</b>Миттєва перевірка</div><div><b>3</b>Запуск у своєму ШІ</div><div><b>4–5</b>Оцінка і перевірка результату</div></div>' + openAiPanel(true) + '<div class="tasks">';
+    TASKS.forEach(function (t) {
+      var st = S.done[t.id] ? '<span class="pill done">Виконано</span>' : (S.drafts[t.id] ? '<span class="pill">Є чернетка</span>' : '<span class="pill">Почати →</span>');
+      html += '<button class="task" data-go="' + t.id + '"><h3>' + t.title + '</h3><span class="st">' + st + '</span><p class="sub">' + t.sub + '</p><p class="meta">' + t.lessons + ' · ' + t.time + '</p></button>';
+    });
+    html += '</div>';
+    view.innerHTML = html;
+    view.querySelectorAll('[data-go]').forEach(function (el) { el.addEventListener('click', function () { location.hash = el.getAttribute('data-go'); }); });
+    document.getElementById('startFirst').addEventListener('click', function () {
+      var next = TASKS.filter(function (x) { return !S.done[x.id]; })[0] || TASKS[0];
+      location.hash = next.id;
+    });
+    startNet(view.querySelector('.stage canvas'), false);
+  }
+
+  // ---------- жива нейромережа на сцені ----------
+  var NET = { raf: 0, size: null };
+  function startNet(cv, small) {
+    cancelAnimationFrame(NET.raf);
+    if (!cv || !cv.getContext) return;
+    var ctx = cv.getContext('2d'), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var COLS = ['111,230,255', '183,148,255', '255,138,200', '157,245,196'];
+    var W = 0, H = 0, nodes = [], pulses = [], D = small ? 110 : 140, last = 0;
+    function size() {
+      var r = cv.getBoundingClientRect(); W = r.width; H = r.height;
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var n = Math.round(Math.min(110, Math.max(30, W * H / (small ? 6000 : 7000))));
+      nodes = [];
+      for (var i = 0; i < n; i++) nodes.push({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35, r: 1 + Math.random() * 2.2, c: COLS[i % 4] });
+    }
+    NET.size = size; size();
+    function core() { return { x: W * (small ? 0.86 : 0.78), y: H * (small ? 0.5 : 0.42), R: Math.min(W, H) * (small ? 0.42 : 0.38) }; }
+    function frame(t) {
+      ctx.clearRect(0, 0, W, H);
+      var C = core(), pulse = 1 + 0.07 * Math.sin(t / 700);
+      var g = ctx.createRadialGradient(C.x, C.y, 0, C.x, C.y, C.R * 1.4 * pulse);
+      g.addColorStop(0, 'rgba(255,255,255,0.95)'); g.addColorStop(0.08, 'rgba(111,230,255,0.85)'); g.addColorStop(0.3, 'rgba(140,92,255,0.45)'); g.addColorStop(0.6, 'rgba(255,79,163,0.12)'); g.addColorStop(1, 'rgba(20,10,60,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(C.x, C.y, C.R * 1.4 * pulse, 0, Math.PI * 2); ctx.fill();
+      ctx.save(); ctx.translate(C.x, C.y); ctx.lineWidth = 1.2;
+      for (var k = 0; k < 3; k++) {
+        ctx.save(); ctx.rotate(t / (4000 + k * 2500) * (k % 2 ? -1 : 1));
+        ctx.setLineDash([3 + k * 3, 9 + k * 4]); ctx.strokeStyle = 'rgba(' + COLS[k] + ',' + (0.55 - k * 0.12) + ')';
+        ctx.beginPath(); ctx.ellipse(0, 0, C.R * (0.55 + k * 0.28), C.R * (0.55 + k * 0.28) * (0.42 + k * 0.08), k * 0.6, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+      }
+      ctx.restore(); ctx.setLineDash([]);
+      var i, j, a, b, dx, dy, d;
+      for (i = 0; i < nodes.length; i++) {
+        a = nodes[i]; a.x += a.vx; a.y += a.vy;
+        if (a.x < 0 || a.x > W) a.vx *= -1; if (a.y < 0 || a.y > H) a.vy *= -1;
+      }
+      for (i = 0; i < nodes.length; i++) {
+        a = nodes[i];
+        for (j = i + 1; j < nodes.length; j++) {
+          b = nodes[j]; dx = a.x - b.x; dy = a.y - b.y; d = Math.sqrt(dx * dx + dy * dy);
+          if (d < D) { ctx.strokeStyle = 'rgba(170,200,255,' + ((1 - d / D) * 0.42).toFixed(3) + ')'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
+        }
+        dx = a.x - C.x; dy = a.y - C.y; d = Math.sqrt(dx * dx + dy * dy);
+        if (d < C.R * 1.6) { ctx.strokeStyle = 'rgba(111,230,255,' + ((1 - d / (C.R * 1.6)) * 0.35).toFixed(3) + ')'; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(C.x, C.y); ctx.stroke(); }
+      }
+      if (t - last > (small ? 260 : 160)) {
+        last = t; a = nodes[Math.floor(Math.random() * nodes.length)];
+        var target = null, best = D;
+        for (j = 0; j < nodes.length; j++) { b = nodes[j]; if (b === a) continue; dx = a.x - b.x; dy = a.y - b.y; d = Math.sqrt(dx * dx + dy * dy); if (d < best && Math.random() < 0.6) { best = d; target = b; } }
+        pulses.push({ a: a, b: target, t: 0, c: a.c, sp: 0.018 + Math.random() * 0.02 });
+        if (pulses.length > 40) pulses.shift();
+      }
+      for (i = pulses.length - 1; i >= 0; i--) {
+        var p = pulses[i]; p.t += p.sp;
+        var tx = p.b ? p.b.x : C.x, ty = p.b ? p.b.y : C.y;
+        var x = p.a.x + (tx - p.a.x) * p.t, y = p.a.y + (ty - p.a.y) * p.t;
+        var pg = ctx.createRadialGradient(x, y, 0, x, y, 9);
+        pg.addColorStop(0, 'rgba(255,255,255,0.95)'); pg.addColorStop(0.35, 'rgba(' + p.c + ',0.8)'); pg.addColorStop(1, 'rgba(' + p.c + ',0)');
+        ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(x, y, 9, 0, Math.PI * 2); ctx.fill();
+        if (p.t >= 1) pulses.splice(i, 1);
+      }
+      for (i = 0; i < nodes.length; i++) {
+        a = nodes[i];
+        ctx.fillStyle = 'rgba(' + a.c + ',0.25)'; ctx.beginPath(); ctx.arc(a.x, a.y, a.r * 3, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = 'rgba(' + a.c + ',0.95)'; ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2); ctx.fill();
+      }
+      if (!reduce) NET.raf = requestAnimationFrame(frame);
+    }
+    NET.raf = requestAnimationFrame(frame);
+  }
+  window.addEventListener('resize', function () { if (NET.size) NET.size(); });
+
+  function openAiPanel(isHome) {
+    return '<div class="panel"><h3><span class="no">0</span>' + (isHome ? 'Перед початком: відкрийте ШІ в браузері' : 'Відкрийте ШІ в браузері') + '</h3>' +
+      '<p>Відкрийте свій ШІ-помічник у <b>новій вкладці</b> — тренажер залишиться відкритим тут. Безкоштовного акаунта достатньо. Якщо ще не маєте — зареєструйтеся (урок 0.2).</p>' +
+      '<div class="ais"><a class="btn ghost" href="https://chatgpt.com/" target="_blank" rel="noopener">Відкрити ChatGPT ↗</a><a class="btn ghost" href="https://claude.ai/" target="_blank" rel="noopener">Відкрити Claude ↗</a><a class="btn ghost" href="https://gemini.google.com/" target="_blank" rel="noopener">Відкрити Gemini ↗</a></div>' +
+      '<p class="small muted"><b>Порада:</b> поставте два вікна поруч — зліва тренажер, справа ШІ. У Windows: клацніть на вікно і натисніть Win + ← або Win + →. Користуйтеся лише дозволеним у компанії сервісом.</p></div>';
+  }
+
+  function copy(text, out) {
+    function fb() { out.textContent = 'Не вдалося скопіювати автоматично — виділіть текст і скопіюйте вручну.'; out.style.color = 'var(--warn)'; }
+    try { navigator.clipboard.writeText(text).then(function () { out.style.color = ''; out.textContent = 'Скопійовано!'; setTimeout(function () { out.textContent = ''; }, 2500); }, fb); } catch (e) { fb(); }
+  }
+
+  function taskView(t) {
+    var html = '<section class="stage small"><canvas aria-hidden="true"></canvas><div class="stage-in"><button class="back" id="back">← Усі задачі</button><p class="kicker">' + t.lessons + ' · ' + t.time + '</p><h2>' + t.title + '</h2><p class="sub">' + esc(t.sub) + '</p></div></section>';
+    html += openAiPanel(false);
+    html += '<div class="panel"><h3>Задача</h3><p>' + esc(t.scenario) + '</p>';
+    if (t.facts) html += '<p class="small muted">Що відомо:</p><ul class="facts">' + t.facts.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul>';
+    if (t.material) html += '<p class="small muted">Матеріал до задачі:</p><div class="material">' + esc(t.material) + '</div><div class="row"><button class="btn ghost" id="copyMat">Скопіювати матеріал</button><span class="status" id="stMat" aria-live="polite"></span></div>';
+    html += '</div>';
+    html += '<div class="panel"><h3><span class="no">1</span>Напишіть запит</h3><p class="small muted">Пишіть так, як написали б у ШІ-помічнику. Формула: роль — ситуація — завдання — вигляд.</p>' +
+      '<label for="p" class="small muted">Ваш запит</label><textarea id="p" placeholder="Ти — …"></textarea>' +
+      '<div class="row"><button class="btn" id="check">Перевірити запит</button><span class="small muted" id="wc"></span></div></div>';
+    html += '<div id="after"></div>';
+    var ti = TASKS.indexOf(t), prev = TASKS[ti - 1], nxt = TASKS[ti + 1];
+    html += '<nav class="tnav">' +
+      (prev ? '<button class="btn ghost" data-nav="' + prev.id + '">← Попередня задача</button>' : '<button class="btn ghost" data-nav="">← Усі задачі</button>') +
+      '<span class="small muted">Задача ' + (ti + 1) + ' з ' + TASKS.length + '</span>' +
+      (nxt ? '<button class="btn" data-nav="' + nxt.id + '">Далі: наступна задача →</button>' : '<button class="btn" data-nav="">Завершити →</button>') +
+      '</nav>';
+    view.innerHTML = html;
+    view.querySelectorAll('[data-nav]').forEach(function (b) { b.addEventListener('click', function () { location.hash = b.getAttribute('data-nav'); }); });
+    startNet(view.querySelector('.stage canvas'), true);
+
+    document.getElementById('back').addEventListener('click', function () { location.hash = ''; });
+    if (t.material) document.getElementById('copyMat').addEventListener('click', function () { copy(t.material, document.getElementById('stMat')); });
+    var ta = document.getElementById('p'), wc = document.getElementById('wc');
+    ta.value = S.drafts[t.id] || '';
+    function upd() { var n = (ta.value.trim().match(/\S+/g) || []).length; wc.textContent = n ? n + ' сл.' : ''; S.drafts[t.id] = ta.value; save(S); }
+    ta.addEventListener('input', upd); upd();
+    document.getElementById('check').addEventListener('click', function () { check(t, ta.value); });
+    if (ta.value.trim().length > 20) check(t, ta.value, true);
+  }
+
+  function check(t, p, silent) {
+    var after = document.getElementById('after');
+    if (p.trim().length < 15) { after.innerHTML = '<div class="alert warn"><b>Запит закороткий</b><p>Напишіть хоча б кілька речень: хто ШІ, яка ситуація, що зробити і в якому вигляді.</p></div>'; return; }
+    var a = analyze(p, t);
+    var parts = [
+      ['role', 'Роль', 'Хто ШІ: «Ти — менеджер з продажу…»'],
+      ['context', 'Ситуація', 'Для кого і що сталося — хоча б 1–2 речення'],
+      ['task', 'Завдання', 'Що зробити: «Напиши», «Склади», «Знайди»…'],
+      ['format', 'Вигляд', 'Довжина, тон, формат: «до 100 слів», «таблицею»']
+    ];
+    var got = parts.filter(function (x) { return a[x[0]]; }).length;
+    var html = '<div class="panel"><h3><span class="no">2</span>Миттєва перевірка</h3><p class="small muted">Це автоматичні підказки за ключовими словами, а не оцінка. Точнішу оцінку дасть ШІ-тренер на кроці 4.</p><div class="checks">';
+    parts.forEach(function (x) { html += '<div class="chk ' + (a[x[0]] ? 'yes' : 'no') + '"><b>' + (a[x[0]] ? '✓ ' : '+ ') + x[1] + '</b><span>' + (a[x[0]] ? 'Є в запиті' : x[2]) + '</span></div>'; });
+    html += '</div>';
+    if (a.pii.length) html += '<div class="alert bad"><b>Стоп: схоже, у запиті є персональні дані</b><p>Знайдено: ' + a.pii.join(', ') + '. Замініть на [позначки] перед тим, як вставляти в ШІ.</p></div>';
+    else html += '<div class="alert ok"><b>Персональних даних не знайдено</b><p>Тренажер перевіряє телефони, пошту, коди, рахунки й адреси. Імена перевірте самі.</p></div>';
+    a.bonus.forEach(function (b) { html += '<div class="alert ' + (b.hit ? 'ok' : 'warn') + '"><b>' + (b.hit ? 'Добре' : 'Порада') + '</b><p>' + esc(b.hit ? b.ok : b.no) + '</p></div>'; });
+    html += '<details><summary>Подивитися приклад сильного запиту</summary><div class="code">' + esc(t.example) + '</div></details></div>';
+
+    var blocked = t.strictPii && a.pii.length;
+    var full = p.trim() + (t.material && !t.strictPii ? '\n\n' + t.material : '');
+    html += '<div class="panel' + (blocked ? ' locked' : '') + '"><h3><span class="no">3</span>Запустіть у своєму ШІ</h3>' +
+      (blocked ? '<p><b>Спершу приберіть персональні дані з запиту</b> — у цій задачі саме це і тренуємо.</p>' :
+      '<p>Скопіюйте запит' + (t.material && !t.strictPii ? ' — матеріал задачі вже доданий у кінці' : '') + ', перейдіть у вкладку з ШІ і вставте (Ctrl + V). ' + (t.id === 'poshuk' ? '<b>Не забудьте увімкнути пошук.</b>' : '') + '</p>' +
+      '<div class="row"><button class="btn" id="copyP">Скопіювати запит</button><span class="status" id="stP" aria-live="polite"></span></div>' +
+      '<div class="ais"><a class="btn ghost" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT ↗</a><a class="btn ghost" href="https://claude.ai/" target="_blank" rel="noopener">Claude ↗</a><a class="btn ghost" href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini ↗</a></div>') +
+      '</div>';
+
+    html += '<div class="panel' + (blocked ? ' locked' : '') + '"><h3><span class="no">4</span>Отримайте оцінку від ШІ-тренера</h3>' +
+      (blocked ? '<p class="muted">Стане доступно, коли в запиті не буде персональних даних.</p>' :
+      '<p>Відкрийте <b>новий чат</b> і вставте цей запит-тренер. ШІ оцінить ваш запит, дасть поради і покращену версію.</p><div class="code" id="coach">' + esc(coachPrompt(t, p)) + '</div><div class="row"><button class="btn" id="copyC">Скопіювати запит-тренер</button><span class="status" id="stC" aria-live="polite"></span></div>') +
+      '</div>';
+
+    html += '<div class="panel' + (blocked ? ' locked' : '') + '"><h3><span class="no">5</span>Перевірте результат ШІ</h3><p>Поставте позначку біля кожного пункту, який виконано у відповіді ШІ на ваш запит.</p><div class="list">' +
+      t.result.map(function (r, k) { return '<label><input type="checkbox" id="r' + k + '"' + (blocked ? ' disabled' : '') + '><span>' + esc(r) + '</span></label>'; }).join('') +
+      '</div><div id="donebox"></div></div>';
+
+    after.innerHTML = html;
+    if (!blocked) {
+      document.getElementById('copyP').addEventListener('click', function () { copy(full, document.getElementById('stP')); });
+      document.getElementById('copyC').addEventListener('click', function () { copy(coachPrompt(t, p), document.getElementById('stC')); });
+      var boxes = after.querySelectorAll('.list input');
+      function upd() {
+        var all = Array.prototype.every.call(boxes, function (b) { return b.checked; });
+        var db = document.getElementById('donebox');
+        if (all) {
+          if (!S.done[t.id]) { S.done[t.id] = true; save(S); renderTotal(); }
+          db.innerHTML = '<div class="donebox"><b>Задачу виконано!</b><p>Збережіть вдалий запит у свою бібліотеку (урок 1.1) — він знадобиться в роботі.</p></div><div class="row">' + (TASKS[TASKS.indexOf(t) + 1] ? '<button class="btn" id="toNext">Далі: ' + esc(TASKS[TASKS.indexOf(t) + 1].title) + ' →</button>' : '') + '<button class="btn ghost" id="toList">До всіх задач</button></div>';
+          document.getElementById('toList').addEventListener('click', function () { location.hash = ''; });
+          var tn = document.getElementById('toNext');
+          if (tn) tn.addEventListener('click', function () { location.hash = TASKS[TASKS.indexOf(t) + 1].id; });
+        } else {
+          var left = Array.prototype.filter.call(boxes, function (b) { return !b.checked; }).length;
+          db.innerHTML = '<p class="small muted">Не виконано пунктів: ' + left + '. Уточніть у тому ж чаті, що виправити, — або допрацюйте запит на кроці 1.</p>';
+        }
+      }
+      boxes.forEach(function (b) { b.addEventListener('change', upd); });
+    }
+    if (!silent) after.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function route() {
+    cancelAnimationFrame(NET.raf); NET.size = null;
+    var h = (location.hash || '').replace('#', '');
+    var t = TASKS.filter(function (x) { return x.id === h; })[0];
+    renderTotal();
+    if (t) taskView(t); else home();
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', route);
+  route();
+})();
+</script>
+
+</html>
