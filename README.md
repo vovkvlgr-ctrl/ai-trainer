@@ -25,7 +25,7 @@
 У редакторі уроку → блок HTML/код:
 
 ```html
-<iframe src="https://vovkvlgr-ctrl.github.io/ai-trainer/#lyst" width="100%" height="1400" style="border:0;border-radius:16px" loading="lazy"></iframe>
+<iframe src="https://vovkvlgr-ctrl.github.io/ai-trainer/" width="100%" height="1600" style="border:0;border-radius:16px" loading="lazy" allow="fullscreen; clipboard-write" allowfullscreen></iframe>
 ```
 
 Замініть `#lyst` на потрібну задачу.

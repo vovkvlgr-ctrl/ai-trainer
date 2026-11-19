@@ -324,6 +324,9 @@ details, .list label { background: rgba(255, 255, 255, 0.65); }
   body::after { animation: none !important; }
 }
 
+.tops { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.fsbtn { padding: 9px 16px; font-size: 13px; }
+html:fullscreen, html:fullscreen body { overflow-y: auto; }
 .tnav { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 16px 0 4px; border-top: 1px solid var(--line); }
 
 /* ===== Сцена-портал з живою нейромережею ===== */
@@ -365,7 +368,10 @@ body::before { display: none; }
         <p>Академія Viatec · ШІ в роботі <span class="online">ШІ-ядро онлайн</span></p>
       </div>
     </div>
-    <p class="total" id="total"></p>
+    <div class="tops">
+      <p class="total" id="total"></p>
+      <button class="btn fsbtn" id="fs" type="button">⤢ На весь екран</button>
+    </div>
   </header>
   <main id="view"></main>
   <p class="note">Тренажер безкоштовний: ви працюєте у своєму ШІ-помічнику (ChatGPT, Claude, Gemini). Сама сторінка нічого нікуди не надсилає. Усі імена, компанії й номери в задачах вигадані — і у вашому запиті мають бути лише такі.</p>
@@ -691,6 +697,24 @@ body::before { display: none; }
     if (t) taskView(t); else home();
     window.scrollTo(0, 0);
   }
+  // ---------- на весь екран ----------
+  var fsBtn = document.getElementById('fs');
+  var root = document.documentElement;
+  function isFs() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function fsLabel() { fsBtn.textContent = isFs() ? '✕ Вийти з повного екрана' : '⤢ На весь екран'; }
+  function openTab() { var a = document.createElement('a'); a.href = location.href; a.target = '_blank'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove(); }
+  fsBtn.addEventListener('click', function () {
+    try {
+      if (isFs()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+      var req = root.requestFullscreen || root.webkitRequestFullscreen;
+      var enabled = document.fullscreenEnabled || document.webkitFullscreenEnabled;
+      if (req && enabled) { var p = req.call(root); if (p && p.catch) p.catch(openTab); }
+      else openTab();
+    } catch (e) { openTab(); }
+  });
+  document.addEventListener('fullscreenchange', fsLabel);
+  document.addEventListener('webkitfullscreenchange', fsLabel);
+
   window.addEventListener('hashchange', route);
   route();
 })();
