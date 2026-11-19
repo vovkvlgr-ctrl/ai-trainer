@@ -1,6 +1,6 @@
 # ШІ-тренажер Академії Viatec
 
-Безкоштовний практичний тренажер до курсів «ШІ-старт» (курс 0) і «ШІ-грамотність» (курс 1).
+Безкоштовний практичний тренажер до курсу 1 «ШІ-грамотність».
 
 Слухач пише запит до робочої задачі, тренажер одразу перевіряє його за формулою «роль — ситуація — завдання — вигляд» і шукає персональні дані. Потім слухач запускає запит у своєму ШІ-помічнику (ChatGPT, Claude, Gemini) і отримує оцінку від «ШІ-тренера».
 
@@ -13,11 +13,11 @@
 | Що | Посилання |
 |---|---|
 | Головна | https://vovkvlgr-ctrl.github.io/ai-trainer/ |
-| Лист клієнту про затримку поставки (0.3 · 1.4) | https://vovkvlgr-ctrl.github.io/ai-trainer/#lyst |
+| Лист клієнту про затримку поставки (1.1) | https://vovkvlgr-ctrl.github.io/ai-trainer/#lyst |
 | Підсумок регламенту для новачка (1.2) | https://vovkvlgr-ctrl.github.io/ai-trainer/#dokument |
 | Тренди ринку з перевіреними джерелами (1.3) | https://vovkvlgr-ctrl.github.io/ai-trainer/#poshuk |
 | Зведення продажів по менеджерах (1.5) | https://vovkvlgr-ctrl.github.io/ai-trainer/#tablytsia |
-| Відповідь клієнту без персональних даних (0.4 · 1.6) | https://vovkvlgr-ctrl.github.io/ai-trainer/#znesob |
+| Відповідь клієнту без персональних даних (1.6) | https://vovkvlgr-ctrl.github.io/ai-trainer/#znesob |
 | Спокійна відповідь на різкий лист (1.4) | https://vovkvlgr-ctrl.github.io/ai-trainer/#ton |
 
 ## Вбудувати в Kwiga
